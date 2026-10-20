@@ -2,9 +2,9 @@
 
 Reprodutor pessoal de músicas para Android, com reprodução pela saída de áudio do aparelho (incluindo caixas de som Bluetooth).
 
-## Versão estável: 1.2
+## Versão estável: v1.2.0
 
-O arquivo [index.html](./index.html) é a versão estável mais recente para arquivos locais. Os arquivos HTML funcionam sem instalação de APK e sem bibliotecas externas para reprodução local.
+Consulte o [registro de versão e aceite v1.2.0](./releases/v1.2.0.md) e o arquivo [VERSION](./VERSION). O arquivo [index.html](./index.html) é a versão estável mais recente para arquivos locais. Os arquivos HTML funcionam sem instalação de APK e sem bibliotecas externas para reprodução local.
 
 ### Funcionalidades
 
@@ -28,7 +28,7 @@ O HTML **não armazena** os arquivos de áudio na nuvem e a seleção de arquivo
 
 ## Histórico
 
-- **v1.2** — introduz repetição individual de música e repetição da playlist em botões separados; corrige o fim do modo aleatório sem repetição.
+- **v1.2.0** — validada pelo usuário no celular em 20/10/2026; introduz repetição individual de música e repetição da playlist em botões separados; corrige o fim do modo aleatório sem repetição.
 - **v1.1** — melhoria de layout da lista no Android, preservada em [versoes/Palco_Player_v1.1.html](./versoes/Palco_Player_v1.1.html).
 
 ## MVP 2 — OneDrive pessoal
