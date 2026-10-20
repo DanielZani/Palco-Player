@@ -1,0 +1,29 @@
+name: Publicar Palco Player na VPS Hostinger
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validar release e configuracao
+        env:
+          HOSTINGER_API_KEY: ${{ secrets.HOSTINGER_API_KEY }}
+          HOSTINGER_VM_ID: ${{ vars.HOSTINGER_VM_ID }}
+        run: |
+          test "$(cat VERSION)" = "1.2.0" || { echo "Versao nao homologada"; exit 1; }
+          test -n "$HOSTINGER_API_KEY" || { echo "Secret HOSTINGER_API_KEY ausente"; exit 1; }
+          test -n "$HOSTINGER_VM_ID" || { echo "Variable HOSTINGER_VM_ID ausente"; exit 1; }
+      - name: Solicitar deploy controlado a Hostinger
+        uses: hostinger/deploy-on-vps@v2
+        with:
+          api-key: ${{ secrets.HOSTINGER_API_KEY }}
+          virtual-machine: ${{ vars.HOSTINGER_VM_ID }}
+          project-name: palco-player
+          docker-compose-path: docker-compose.yml
