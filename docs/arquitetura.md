@@ -4,17 +4,6 @@ Como a versão estável carrega arquivos, decide a próxima faixa e entrega o á
 
 [Leia também: Manual do usuário](manual.md)
 
-**Sumário**
-
-- [Visão do produto](#visao)
-- [Mapa da arquitetura](#mapa)
-- [Organização do repositório](#repositorio)
-- [Componentes e pontos de manutenção](#componentes)
-- [Estado, arquivos e ciclo de vida](#dados)
-- [Fluxos de execução e casos de borda](#fluxos)
-- [Desenvolver e testar uma alteração](#desenvolvimento)
-- [Distribuição e integração dos guias](#distribuicao)
-
 <a name="visao"></a>
 
 ## Visão do produto
@@ -49,7 +38,10 @@ A aplicação usa as APIs do navegador diretamente. A interface, a lógica e a r
 | `versoes/Palco_Player_v1.1.html` | Cópia histórica anterior à introdução dos modos separados de repetição. |
 | Branch `develop/mvp2-onedrive` | Linha reservada ao MVP 2 de acesso direto ao OneDrive pessoal, descrito no projeto como não homologado. Na estável, o arquivo pode chegar via seletor do sistema. |
 | Branch `deploy/v1.2.0-hostinger` | Preparação de hospedagem com Docker, NGINX, configuração de porta, healthcheck e proposta de publicação. Abrange uma camada separada da aplicação. |
-| `docs/arquitetura.html` e `docs/manual.html` | Referência técnica e manual do usuário. São páginas estáticas autônomas com links relativos entre si. |
+| `docs/arquitetura.md` e `docs/manual.md` | Fontes editáveis da referência técnica e do manual de operação, legíveis no GitHub. |
+| `scripts/gerar_site.py`, `scripts/guias.css` e `scripts/requirements-guias.txt` | Gerador, estilo de leitura e versões das dependências usadas no empacotamento. |
+| `.github/workflows/gerar-site.yml` | Monta e valida a distribuição com o código e os dois documentos do checkout. |
+| `dist/index.html` e `dist/docs/*.html` | Produto pronto para distribuição. O pacote contém o player e duas páginas estáticas para uso local ou hospedado. |
 
 <a name="componentes"></a>
 
@@ -142,7 +134,7 @@ Prepare três arquivos de áudio curtos e distinguíveis, por exemplo `01 A.wav`
 
 Na distribuição local, o usuário abre `index.html`. Na hospedada, o navegador o recebe por HTTP(S). As duas páginas de documentação usam CSS embutido, fontes do sistema e links relativos. Podem ser lidas diretamente do disco. Links de referência ao GitHub ou a fornecedores exigem conexão.
 
-**VPS Hostinger.** A proposta versionada publica um NGINX não privilegiado na porta 8080 do contêiner, com mapeamento padrão para `127.0.0.1:18712` no host. O proxy externo termina HTTPS. O Dockerfile da proposta inclui só `index.html`; a regra genérica de NGINX retorna 404. Para servir os guias, inclua os dois arquivos na imagem e permita explicitamente os dois caminhos. O [manual de hospedagem](manual.md#servidor) traz as instruções e os testes. Referências da proposta: [Dockerfile](https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/deploy/Dockerfile), [NGINX](https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/deploy/default.conf) e [Compose](https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/docker-compose.yml).
+**VPS Hostinger.** A proposta versionada publica um NGINX não privilegiado na porta 8080 do contêiner, com mapeamento padrão para `127.0.0.1:18712` no host. O proxy externo termina HTTPS. O Dockerfile da proposta inclui só `index.html`; a regra genérica de NGINX retorna 404. Para servir os guias, integre o pacote gerado da mesma revisão à construção da imagem e permita explicitamente os dois caminhos. O [manual de hospedagem](manual.md#servidor) traz as instruções e os testes. Referências da proposta: [Dockerfile](https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/deploy/Dockerfile), [NGINX](https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/deploy/default.conf) e [Compose](https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/docker-compose.yml).
 
 **Links para a próxima versão.** A partir do `index.html` na raiz, estes são os destinos previstos. Se os links forem acionados durante um evento, abrir o guia em outra aba permite consultar as instruções mantendo a sessão e a playlist abertas.
 
@@ -152,3 +144,39 @@ Na distribuição local, o usuário abre `index.html`. Na hospedada, o navegador
 ```
 
 Ao testar uma distribuição em subdiretório, por exemplo `/palco/`, mantenha os destinos relativos. Confira a raiz, cada página interna e um link de seção do manual. O teste de `/healthz` verifica o contêiner, mas cada HTML precisa de uma verificação própria de conteúdo.
+
+<a name="geracao"></a>
+
+## Como os manuais passam do GitHub às páginas do produto
+
+| Documento | Arquivo editado e revisado no GitHub | Página gerada no pacote | Destino a partir do player |
+|---|---|---|---|
+| Arquitetura e desenvolvimento | `docs/arquitetura.md` | `dist/docs/arquitetura.html` | `docs/arquitetura.html` |
+| Manual do usuário | `docs/manual.md` | `dist/docs/manual.html` | `docs/manual.html` |
+
+**Autoria.** Ao alterar um comportamento, atualize no mesmo PR as instruções de uso afetadas e descreva no guia técnico a implementação e os testes relevantes. Os títulos, exemplos e textos das páginas vêm dos Markdown. Uma melhoria no código ainda precisa ser descrita por quem a desenvolveu. O gerador reproduz essa descrição e prepara os links de navegação.
+
+**Conversão.** O processo lê os dois Markdown em UTF-8, renderiza títulos, listas, tabelas e código, monta o sumário de cada HTML e incorpora o CSS. Âncoras como `servidor` são preservadas. Um link editorial como `manual.md#servidor` vira `manual.html#servidor` no produto. Endereços externos e exemplos em blocos de código conservam os destinos escritos pelo autor. As duas páginas abrem com a rede desligada quando os três HTML estão no aparelho.
+
+**Construção.** Em push, pull request ou execução manual, o workflow **Gerar player e documentação** cria `dist/` com o player e as páginas da mesma revisão. O gerador confere destinos relativos e âncoras antes de liberar o pacote. Uma referência quebrada faz a construção falhar. Uma execução bem-sucedida disponibiliza o artefato **palco-player-site** nos detalhes da execução do GitHub Actions. Para distribuir uma versão integrada, use o artefato da revisão aprovada na branch de publicação. O histórico dos Markdown, do gerador e do estilo permite reconstruir cada versão sem versionar as saídas HTML.
+
+**Reprodução local.** Na raiz do checkout, use Python 3.10 ou superior, preferencialmente em um ambiente virtual. No Windows, `py -3` também pode ser usado no lugar de `python`. Execute:
+
+```sh
+python -m pip install -r scripts/requirements-guias.txt
+python scripts/gerar_site.py
+```
+
+Abra `dist/docs/manual.html` e `dist/docs/arquitetura.html` no navegador. Para simular um servidor, execute `python -m http.server 8000 --bind 127.0.0.1 --directory dist`. Abra a raiz e os dois caminhos de documentação em `http://127.0.0.1:8000/`. Dependências Python são necessárias apenas durante a construção.
+
+**Publicação e retorno.** O artefato é a unidade de distribuição. Publique o conteúdo completo de uma única revisão e, se precisar reverter, restaure o pacote completo da revisão anterior. A geração no GitHub não aciona o deploy da VPS. A proposta Hostinger no PR #1 ainda requer integração com esse pacote e com as duas rotas do servidor; veja as etapas no [manual de hospedagem](manual.md#servidor).
+
+### Histórico e validação desta estrutura
+
+- A documentação partiu da leitura da v1.2.0 e do relatório de testes do player. Foram produzidos o guia técnico e o manual, com instruções de uso local, operação do evento e hospedagem.
+- Na primeira entrega do PR #2 havia dois HTML editáveis. Depois foram incluídas cópias em Markdown porque a prévia dos arquivos HTML falhou no aplicativo ChatGPT. Daniel confirmou no celular a leitura das duas páginas apresentadas pelo GitHub.
+- A estrutura atual mantém os dois Markdown como fontes e gera os dois HTML para distribuição. Os caminhos previstos para os links da próxima versão do player permanecem os mesmos.
+- Para verificar a sincronização em uma revisão de teste, altere uma frase em cada Markdown e gere o pacote. Procure a frase respectiva em cada HTML, abra os dois guias a partir do pacote e confira os links cruzados. Introduza temporariamente uma âncora inexistente em um link e confirme que o gerador falha. Descarte as alterações de teste.
+- A homologação da distribuição inclui abrir os HTML efetivamente servidos pelo domínio no celular, consultar as seções e verificar o retorno ao player. A leitura confirmada no GitHub é um registro separado desse teste de publicação.
+
+**Verificação da geração em 27/11/2026.** Com as dependências fixadas no projeto, duas construções dos mesmos fontes produziram os mesmos três arquivos byte a byte. Em cópia isolada, a inclusão de texto, negrito e uma seção nova em cada Markdown chegou ao HTML correspondente e ao sumário. O player permaneceu idêntico ao original. Os três arquivos responderam HTTP 200 sob um subdiretório. Um link cruzado com âncora inexistente foi rejeitado e o último pacote válido foi preservado. Esses ensaios cobrem geração, navegação e empacotamento. A hospedagem de produção e a interface do player com os dois links pertencem à próxima entrega.

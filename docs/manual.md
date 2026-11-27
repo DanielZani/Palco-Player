@@ -4,17 +4,6 @@ Do primeiro arquivo à última faixa: prepare sua playlist, escolha a saída de 
 
 [Leia também: Arquitetura e desenvolvimento](arquitetura.md)
 
-**Sumário**
-
-- [Começar em três passos](#comecar)
-- [Usar localmente no computador ou celular](#local)
-- [Instalar em servidor web ou VPS](#servidor)
-- [Criar, organizar e limpar a playlist](#playlist)
-- [Reproduzir e controlar a música](#reproduzir)
-- [Escolher aleatório e repetição](#modos)
-- [Som, Bluetooth e encerramento](#saida)
-- [Resolver problemas frequentes](#problemas)
-
 <a name="comecar"></a>
 
 ## Começar em três passos
@@ -32,6 +21,8 @@ Do primeiro arquivo à última faixa: prepare sua playlist, escolha a saída de 
 ### Obter o arquivo correto
 
 O aplicativo estável é o arquivo **index.html**. Para a v1.2.0, abra o [código desta versão no GitHub](https://github.com/DanielZani/Palco-Player/blob/f0d3fcaba599217377b2bcdde7cbf059678250db/index.html) e use **Download raw file** (baixar o arquivo original), se disponível. Outra opção é baixar o [ZIP da versão estável](https://github.com/DanielZani/Palco-Player/archive/f0d3fcaba599217377b2bcdde7cbf059678250db.zip) e extraí-lo. Abra o HTML extraído. Salvar a página de visualização do GitHub pode baixar a interface do GitHub.
+
+**Para obter o produto completo**, no GitHub abra **Actions → Gerar player e documentação**, escolha a execução bem-sucedida da revisão desejada e baixe o artefato **palco-player-site** (requer acesso ao download de artefatos). Extraia o ZIP e abra o arquivo `index.html`. Outra opção é gerar a mesma pasta a partir da revisão, conforme a [documentação técnica](arquitetura.md#geracao).
 
 **Para ter a documentação offline**, guarde `arquitetura.html` e `manual.html` na subpasta `docs`, ao lado de `index.html` na pasta principal. Os links entre os três arquivos usam essa disposição. O ZIP histórico da v1.2.0 contém o player original e antecede a criação destes guias.
 
@@ -58,7 +49,7 @@ Com a página local aberta e os arquivos disponíveis no aparelho, a reproduçã
 
 ### Opção A · Site estático em servidor existente
 
-1. Obtenha o `index.html` estável e as duas páginas deste guia. Prepare a pasta de publicação com esta estrutura:
+1. Extraia o pacote **palco-player-site** da revisão escolhida ou use a pasta `dist/` gerada a partir dela. O conteúdo pronto para publicar tem esta estrutura:
 
 ```text
 palco-player/
@@ -78,12 +69,13 @@ palco-player/
 O repositório contém uma **proposta de implantação** no [PR de preparação da Hostinger](https://github.com/DanielZani/Palco-Player/pull/1). O exemplo usa NGINX no contêiner e um proxy HTTPS na VPS. O domínio previsto é `player.zani.ia.br`; confirme sua configuração no ambiente antes de utilizá-lo.
 
 1. O administrador identifica o proxy e a rede existentes, o domínio, o mecanismo de certificado, as versões de Docker/Compose e uma porta de loopback livre. O pacote sugere `127.0.0.1:18712`. Registre a configuração do site e a versão anterior para retorno.
-2. Prepare uma cópia de trabalho com `docker-compose.yml`, `deploy/Dockerfile` e `deploy/default.conf` da [revisão de hospedagem](https://github.com/DanielZani/Palco-Player/tree/72fff687976c3e16e447a2e34b4fafef11edf6b2), o player na raiz e os dois HTML em `docs/`.
-3. **Inclua os guias no pacote.** O Dockerfile original copia somente o player. Acrescente as duas linhas abaixo, mantendo a cópia de `index.html`. No bloco `server` de `deploy/default.conf`, acrescente as duas rotas exatas antes da regra genérica que retorna 404. O exemplo utiliza o `root` já definido no pacote.
+2. Prepare uma cópia de trabalho com `docker-compose.yml`, `deploy/Dockerfile` e `deploy/default.conf` da [revisão de hospedagem](https://github.com/DanielZani/Palco-Player/tree/72fff687976c3e16e447a2e34b4fafef11edf6b2), a revisão aprovada do produto e seu pacote gerado em `dist/` na raiz do contexto Docker. Para cada atualização, use a saída da geração da mesma revisão.
+3. **Inclua os guias no pacote.** O Dockerfile original copia somente o player. Na integração inicial, substitua a cópia isolada de `index.html` pelas três linhas abaixo. Elas usam o pacote gerado. No bloco `server` de `deploy/default.conf`, acrescente as duas rotas exatas antes da regra genérica que retorna 404. O exemplo utiliza o `root` já definido no pacote.
 
 ```dockerfile
-COPY docs/manual.html /usr/share/nginx/html/docs/manual.html
-COPY docs/arquitetura.html /usr/share/nginx/html/docs/arquitetura.html
+COPY dist/index.html /usr/share/nginx/html/index.html
+COPY dist/docs/manual.html /usr/share/nginx/html/docs/manual.html
+COPY dist/docs/arquitetura.html /usr/share/nginx/html/docs/arquitetura.html
 ```
 
 ```nginx
@@ -91,7 +83,7 @@ location = /docs/manual.html     { try_files $uri =404; }
 location = /docs/arquitetura.html { try_files $uri =404; }
 ```
 
-4. Na pasta de trabalho da implantação, o administrador valida o Compose, constrói a imagem e verifica o serviço. Estes comandos exemplificam a configuração original e a porta padrão em um ambiente preparado:
+4. Se o provedor construir diretamente de um checkout limpo, a preparação da imagem precisa gerar `dist/` nessa construção ou receber o artefato da revisão; a pasta gerada não acompanha o checkout. Na pasta de trabalho da implantação, o administrador valida o Compose, constrói a imagem e verifica o serviço. Estes comandos exemplificam a configuração original e a porta padrão em um ambiente preparado:
 
 ```sh
 docker compose config --quiet
