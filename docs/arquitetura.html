@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#122638"><title>Arquitetura e desenvolvimento · Palco Player v1.2.0</title><style>
+:root{--ink:#17273a;--muted:#4c6170;--line:#cbd7d8;--paper:#fff;--brand:#104c4d;--mint:#a9f0d7;--night:#122638;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--ink);background:#f5f7f5;font-size:100%;line-height:1.62}
+*{box-sizing:border-box}body{margin:0}a{color:#086065;text-underline-offset:.2em}a:hover{text-decoration-thickness:2px}a:focus-visible,summary:focus-visible{outline:3px solid #dc8600;outline-offset:3px}h1,h2,h3{line-height:1.15;text-wrap:balance}h1{font-size:clamp(2.3rem,5.5vw,4.5rem);margin:.25em 0;letter-spacing:-.05em}h2{font-size:clamp(1.65rem,3vw,2.35rem);letter-spacing:-.04em;margin:0 0 .7em}h3{margin:1.6em 0 .6em;font-size:1.25rem}p{margin:.8em 0}.wrap{width:min(100% - 2rem,74rem);margin:auto}header{background:var(--night);color:#fafcfb}.bar{display:flex;align-items:center;justify-content:space-between;gap:.8em;padding:1.05rem 0;border-bottom:1px solid #475762}.brand{color:#fff;font-weight:750;letter-spacing:-.03em;text-decoration:none}.brand b{color:var(--mint)}.links{display:flex;flex-wrap:wrap;gap:.25rem 1rem}.links a,header a{color:var(--mint)}.hero{padding:clamp(1.8rem,4vw,3rem) 0}.hero p{max-width:53rem;color:#d1e1e6;margin-bottom:0}.version{font:600 .8rem ui-monospace,monospace;color:var(--mint)}.columns{display:grid;grid-template-columns:minmax(13rem,16rem) minmax(0,1fr);gap:2.6rem;align-items:start;padding:2rem 0 3rem}.idx{position:sticky;top:1rem;border-top:3px solid var(--brand);padding-top:.6rem}.idx strong{display:block}.idx a{display:block;padding:.42rem 0;text-decoration:none;line-height:1.45}.idx a:hover{text-decoration:underline}article{min-width:0;background:white;border:1px solid var(--line);border-radius:10px;padding:clamp(1rem,3.2vw,2.7rem)}section+section{border-top:1px solid var(--line);margin-top:2.3rem;padding-top:2rem}h2[id],section[id]{scroll-margin-top:1rem}.top{display:inline-block;font-size:.87rem;margin:.45rem 0 .1rem}ul,ol{padding-left:1.5em}li{margin:.47em 0;padding-left:.2em}li::marker{color:var(--brand);font-weight:bold}code{font:.9em ui-monospace,Consolas,monospace;background:#eaf2f0;border-radius:3px;padding:.08em .22em;overflow-wrap:anywhere}pre{background:#172c39;color:#f2f8f5;line-height:1.55;padding:1em;border-radius:5px;white-space:pre-wrap;overflow-wrap:anywhere}pre code{background:none;padding:0}blockquote,.mapa{background:#eef7f3;border-left:3px solid #257b68;margin:1.2em 0;padding:.65em 1em}.rota{padding:.65em .1em}.rota+.rota{border-top:1px solid var(--line)}.rota strong{display:block;color:var(--brand)}table{border-collapse:collapse;margin:1em 0;width:100%;text-align:left;font-size:.96em}td,th{padding:.65em;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e6efed;font-size:.92em}td p{margin:0}footer{border-top:1px solid var(--line);padding:1.2em 0;color:var(--muted)}.skip{position:absolute;left:1rem;top:-6rem;background:white;color:var(--ink);padding:.5rem}.skip:focus{top:.3rem}.mobile-nav{display:none}
+@media(max-width:820px){.columns{grid-template-columns:1fr;gap:1rem;padding-top:1rem}.idx{position:static}.wide-nav{display:none}.mobile-nav{display:block}.mobile-nav summary{cursor:pointer;padding:.55rem 0;font-weight:bold}.bar{flex-wrap:wrap}.links{font-size:.92rem}.wrap{width:min(100% - 1.4rem,74rem)}}
+@media(max-width:600px){table,tbody,tr,td{display:block}table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}tr{border-top:1px solid var(--line);padding:.45rem .2rem}tbody tr:nth-child(odd){background:#f4f7f6}td{border:0;padding:.28rem .4rem}td:before{content:attr(data-label);display:block;font-size:.75rem;font-weight:700;color:var(--muted)}}
+@media print{header{color:black;background:white}.hero p,.version,.brand,.brand b{color:black}.idx,.links,.top,.skip,footer{display:none}.wrap{width:100%}.columns{display:block;padding:0}article{border:0;padding:0}section+section{margin-top:1rem;padding-top:1rem}h2,h3{break-after:avoid}tr{break-inside:avoid}}
+</style></head>
+<body><a class="skip" href="#conteudo">Ir para o conteúdo</a><header><div class="wrap"><div class="bar"><a class="brand" href="../index.html">Palco <b>Player</b></a><nav class="links" aria-label="Páginas do produto"><a href="manual.html">Manual do usuário</a><a href="../index.html">Abrir player</a></nav></div><div class="hero"><span class="version">Palco Player · v1.2.0</span><h1>Arquitetura e desenvolvimento</h1><p>Como a versão estável carrega arquivos, decide a próxima faixa e entrega o áudio ao sistema. Referência para manter, testar e distribuir o produto.</p></div></div></header>
+<main class="columns wrap" id="conteudo"><nav class="idx" id="indice" aria-label="Sumário da página"><div class="wide-nav"><strong>Sumário</strong><a href="#visao">Visão do produto</a><a href="#mapa">Mapa da arquitetura</a><a href="#repositorio">Organização do repositório</a><a href="#componentes">Componentes e pontos de manutenção</a><a href="#dados">Estado, arquivos e ciclo de vida</a><a href="#fluxos">Fluxos de execução e casos de borda</a><a href="#desenvolvimento">Desenvolver e testar uma alteração</a><a href="#distribuicao">Distribuição e integração dos guias</a></div><details class="mobile-nav"><summary>Sumário da página</summary><a href="#visao">Visão do produto</a><a href="#mapa">Mapa da arquitetura</a><a href="#repositorio">Organização do repositório</a><a href="#componentes">Componentes e pontos de manutenção</a><a href="#dados">Estado, arquivos e ciclo de vida</a><a href="#fluxos">Fluxos de execução e casos de borda</a><a href="#desenvolvimento">Desenvolver e testar uma alteração</a><a href="#distribuicao">Distribuição e integração dos guias</a></details></nav><article aria-label="Arquitetura e desenvolvimento"><section id="visao"><h2>Visão do produto</h2>
+<p>O Palco Player v1.2.0 é uma aplicação web estática de reprodução local, voltada ao uso em eventos. O navegador executa o HTML, o CSS e o JavaScript de um único arquivo, <code>index.html</code>. A seleção e a reprodução das músicas acontecem no aparelho de quem abriu a página. Hospedar esse arquivo muda o meio de distribuição do aplicativo; cada aparelho continua responsável por seus arquivos e por sua fila.</p>
+<p><strong>Referência da implementação:</strong> branch <code>main</code>, revisão <code>f0d3fca</code>, versão <code>1.2.0</code>. O aceite registrado em 20/10/2026 trata da melhoria de repetição em celular. O <a href="https://github.com/DanielZani/Palco-Player/blob/f0d3fcaba599217377b2bcdde7cbf059678250db/index.html">código da versão</a> e o <a href="https://github.com/DanielZani/Palco-Player/blob/f0d3fcaba599217377b2bcdde7cbf059678250db/releases/v1.2.0.md">registro de aceite</a> fixam a base desta referência.</p>
+<a href="#indice" class="top">Voltar ao sumário ↑</a></section>
+<section id="mapa"><h2>Mapa da arquitetura</h2>
+<div class="mapa" role="group" aria-label="Fluxos de dados, comandos e eventos do Palco Player">
+<div class="rota">
+<strong>Entrada de músicas</strong><span>Seletor do aparelho → objetos File → filtro e ordenação → playlist em memória</span>
+</div>
+<div class="rota">
+<strong>Comandos</strong><span>Botões da página ou Media Session → lógica JavaScript → seleção da faixa e modo</span>
+</div>
+<div class="rota">
+<strong>Caminho do áudio</strong><span>File selecionado → URL temporária → elemento &lt;audio&gt; → saída do sistema → caixa ou fone</span>
+</div>
+<div class="rota">
+<strong>Retorno à tela</strong><span>Eventos do elemento &lt;audio&gt; → tempo, duração e estado → controles e lista</span>
+</div>
+<div class="rota">
+<strong>Distribuição</strong><span>Arquivo local ou servidor estático → navegador. A música escolhida segue pelo caminho local do áudio.</span>
+</div>
+</div>
+<p>A aplicação usa as APIs do navegador diretamente. A interface, a lógica e a reprodução compartilham o mesmo documento, sem etapa de compilação ou biblioteca externa de execução. O servidor de hospedagem pode entregar os HTML sem receber músicas, metadados da playlist ou comandos de reprodução. O áudio é decodificado pelo navegador e encaminhado pelo sistema operacional, que também administra o volume e o Bluetooth.</p>
+<a href="#indice" class="top">Voltar ao sumário ↑</a></section>
+<section id="repositorio"><h2>Organização do repositório</h2>
+<table>
+<thead>
+<tr class="header">
+<th scope="col">Local</th>
+<th scope="col">Papel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-label="Local"><code>main/index.html</code> (arquivo na raiz da branch)</td>
+<td data-label="Papel">Implementação estável. O CSS está em <code>&lt;style&gt;</code>. O corpo contém importação, reprodução e playlist. Um bloco <code>&lt;script&gt;</code> no fim registra os eventos e inicializa a tela.</td>
+</tr>
+<tr class="even">
+<td data-label="Local"><code>VERSION</code>, <code>README.md</code>, <code>releases/v1.2.0.md</code></td>
+<td data-label="Papel">Número da versão, escopo funcional e evidências de aceite.</td>
+</tr>
+<tr class="odd">
+<td data-label="Local"><code>docs/testes-v1.2.md</code></td>
+<td data-label="Papel">Relatório de cenários e resultados em Chromium. O relatório documenta os ensaios; o arquivo não é um executor de testes.</td>
+</tr>
+<tr class="even">
+<td data-label="Local"><code>versoes/Palco_Player_v1.1.html</code></td>
+<td data-label="Papel">Cópia histórica anterior à introdução dos modos separados de repetição.</td>
+</tr>
+<tr class="odd">
+<td data-label="Local">Branch <code>develop/mvp2-onedrive</code></td>
+<td data-label="Papel">Linha reservada ao MVP 2 de acesso direto ao OneDrive pessoal, descrito no projeto como não homologado. Na estável, o arquivo pode chegar via seletor do sistema.</td>
+</tr>
+<tr class="even">
+<td data-label="Local">Branch <code>deploy/v1.2.0-hostinger</code></td>
+<td data-label="Papel">Preparação de hospedagem com Docker, NGINX, configuração de porta, healthcheck e proposta de publicação. Abrange uma camada separada da aplicação.</td>
+</tr>
+<tr class="odd">
+<td data-label="Local"><code>docs/arquitetura.html</code> e <code>docs/manual.html</code></td>
+<td data-label="Papel">Referência técnica e manual do usuário. São páginas estáticas autônomas com links relativos entre si.</td>
+</tr>
+</tbody>
+</table>
+<a href="#indice" class="top">Voltar ao sumário ↑</a></section>
+<section id="componentes"><h2>Componentes e pontos de manutenção</h2>
+<p>A divisão a seguir descreve responsabilidades dentro do mesmo script. A função autoexecutável encapsula as variáveis da sessão. Os elementos são localizados pelo atributo <code>id</code>. Ao alterar a marcação, revise os identificadores que os manipuladores usam.</p>
+<table>
+<thead>
+<tr class="header">
+<th scope="col">Responsabilidade</th>
+<th scope="col">Onde alterar no código</th>
+<th scope="col">O que verificar em seguida</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-label="Responsabilidade">Selecionar, filtrar e ordenar arquivos</td>
+<td data-label="Onde alterar no código">Inputs <code>files</code> e <code>folder</code>, expressão <code>allowed</code>, <code>key()</code>, <code>cleanName()</code>, <code>addFiles()</code> e <code>Intl.Collator</code></td>
+<td data-label="O que verificar em seguida">Seleção múltipla, compatibilidade do seletor, duplicatas por lote e entre lotes, ordem numérica e estado da primeira faixa.</td>
+</tr>
+<tr class="even">
+<td data-label="Responsabilidade">Exibir a playlist e editar a ordem</td>
+<td data-label="Onde alterar no código"><code>render()</code>, <code>move()</code>, <code>remove()</code>, <code>clear()</code></td>
+<td data-label="O que verificar em seguida">Faixa destacada, índice atual depois de mover ou remover, contagem e descarte do histórico aleatório. A limpeza pede confirmação.</td>
+</tr>
+<tr class="odd">
+<td data-label="Responsabilidade">Carregar mídia e alternar play/pausa</td>
+<td data-label="Onde alterar no código"><code>playAt()</code>, <code>togglePlay()</code>, <code>releaseUrl()</code>, elemento <code>audio</code></td>
+<td data-label="O que verificar em seguida">Troca de faixa, retomada da mesma posição, liberação do recurso anterior e resposta à rejeição de <code>play()</code>.</td>
+</tr>
+<tr class="even">
+<td data-label="Responsabilidade">Avançar, voltar e sortear</td>
+<td data-label="Onde alterar no código"><code>nextIndex()</code>, <code>next()</code>, <code>prev()</code> e evento <code>ended</code></td>
+<td data-label="O que verificar em seguida">Fim automático versus avanço manual, primeira/última faixa, faixa única, retorno após três segundos e histórico de sorteio.</td>
+</tr>
+<tr class="odd">
+<td data-label="Responsabilidade">Repetir</td>
+<td data-label="Onde alterar no código"><code>setRepeatMode()</code>, propriedade <code>audio.loop</code> e fallback de <code>ended</code></td>
+<td data-label="O que verificar em seguida">Exclusividade dos modos, desligamento, troca manual de faixa com repetição ativa e fim de rodada.</td>
+</tr>
+<tr class="even">
+<td data-label="Responsabilidade">Sincronizar tela e tratar erros</td>
+<td data-label="Onde alterar no código"><code>status()</code>, <code>updateButtons()</code>, <code>updateNow()</code>, <code>render()</code> e eventos de mídia</td>
+<td data-label="O que verificar em seguida">Progresso, duração, destaque visual, faixa vazia, mensagens e botões desabilitados.</td>
+</tr>
+<tr class="odd">
+<td data-label="Responsabilidade">Atender controles de mídia do sistema</td>
+<td data-label="Onde alterar no código">Bloco <code>navigator.mediaSession</code>, <code>MediaMetadata</code> e <code>setActionHandler()</code></td>
+<td data-label="O que verificar em seguida">Metadados e ações suportadas pelo navegador. O título vem do nome do arquivo; artista e álbum recebem rótulos fixos do player.</td>
+</tr>
+<tr class="even">
+<td data-label="Responsabilidade">Layout e acessibilidade</td>
+<td data-label="Onde alterar no código">CSS responsivo, botões nativos, rótulos ARIA, região de status e barra de posição</td>
+<td data-label="O que verificar em seguida">Teclado, foco visível, nomes acessíveis, estado pressionado dos modos e ausência de rolagem horizontal.</td>
+</tr>
+</tbody>
+</table>
+<a href="#indice" class="top">Voltar ao sumário ↑</a></section>
+<section id="dados"><h2>Estado, arquivos e ciclo de vida</h2>
+<table>
+<thead>
+<tr class="header">
+<th scope="col">Estado</th>
+<th scope="col">Conteúdo e duração</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-label="Estado"><code>tracks</code></td>
+<td data-label="Conteúdo e duração">Array em memória de objetos <code>{ file }</code>. Cada <code>file</code> é uma referência fornecida pelo seletor. O critério de duplicidade concatena nome, tamanho e data de modificação; não compara o conteúdo binário.</td>
+</tr>
+<tr class="even">
+<td data-label="Estado"><code>index</code></td>
+<td data-label="Conteúdo e duração">Índice atual a partir de zero. <code>-1</code> representa ausência de faixa selecionada. A primeira importação seleciona a posição zero e aguarda o comando de reprodução.</td>
+</tr>
+<tr class="odd">
+<td data-label="Estado"><code>currentUrl</code></td>
+<td data-label="Conteúdo e duração">URL temporária gerada por <code>URL.createObjectURL(file)</code> para a fonte ativa do elemento de áudio. <code>releaseUrl()</code> chama <code>URL.revokeObjectURL()</code>.</td>
+</tr>
+<tr class="even">
+<td data-label="Estado"><code>shuffle</code> e <code>shuffleHistory</code></td>
+<td data-label="Conteúdo e duração">Sinalizador do aleatório e histórico de índices usados para escolha e retorno. Mover ou remover faixas limpa esse histórico, pois os índices podem mudar.</td>
+</tr>
+<tr class="odd">
+<td data-label="Estado"><code>repeatMode</code></td>
+<td data-label="Conteúdo e duração">Um de três valores, <code>off</code>, <code>track</code> ou <code>playlist</code>. Somente <code>track</code> ativa <code>audio.loop</code>.</td>
+</tr>
+<tr class="even">
+<td data-label="Estado"><code>skipErrors</code></td>
+<td data-label="Conteúdo e duração">Conta erros consecutivos no evento de erro de mídia. Um <code>play()</code> bem-sucedido zera o contador.</td>
+</tr>
+<tr class="odd">
+<td data-label="Estado">Estado do navegador</td>
+<td data-label="Conteúdo e duração"><code>audio.paused</code>, <code>currentTime</code> e <code>duration</code> alimentam os controles. A duração pode estar indisponível antes do carregamento dos metadados.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Persistência.</strong> A v1.2.0 não grava a fila em banco, cookie, armazenamento local ou arquivo de playlist. Recarregar encerra o estado da sessão. A remoção de uma linha modifica o array em memória e preserva o arquivo original. O navegador só entrega à aplicação os arquivos escolhidos pelo usuário.</p>
+<p><strong>Ciclo da URL.</strong> Ao trocar de música, <code>playAt()</code> pausa, remove a fonte anterior, reinicializa o elemento, revoga a URL antiga, cria a nova e chama <code>audio.play()</code>. Pausar e retomar a mesma faixa reaproveita a fonte carregada. A remoção da faixa ativa, a limpeza e o manipulador de <code>beforeunload</code> também liberam a URL quando aplicável.</p>
+<a href="#indice" class="top">Voltar ao sumário ↑</a></section>
+<section id="fluxos"><h2>Fluxos de execução e casos de borda</h2>
+<h3 id="importar-e-iniciar">Importar e iniciar</h3>
+<p>O evento <code>change</code> envia os arquivos a <code>addFiles()</code> e limpa o valor do input para permitir nova seleção. O filtro aceita MIME iniciado por <code>audio/</code> ou extensão reconhecida. O lote novo é ordenado por caminho relativo ou nome sem extensão usando ordenação numérica em português do Brasil. A aplicação acrescenta o lote à fila, atualiza a contagem e desenha os controles. Um clique em uma linha chama <code>playAt(i)</code>.</p>
+<h3 id="terminar-voltar-ou-repetir">Terminar, voltar ou repetir</h3>
+<table>
+<thead>
+<tr class="header">
+<th scope="col">Evento</th>
+<th scope="col">Decisão da implementação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-label="Evento">Fim natural, modo normal</td>
+<td data-label="Decisão da implementação"><code>ended</code> chama <code>next(false)</code>. Sem sucessora, pausa, volta o tempo a zero e informa fim da playlist.</td>
+</tr>
+<tr class="even">
+<td data-label="Evento">Fim natural, repetir faixa</td>
+<td data-label="Decisão da implementação"><code>audio.loop</code> cuida do ciclo. Se o navegador disparar <code>ended</code>, o fallback volta a zero e tenta tocar novamente.</td>
+</tr>
+<tr class="odd">
+<td data-label="Evento">Última faixa, repetir playlist</td>
+<td data-label="Decisão da implementação">No sequencial, <code>nextIndex()</code> devolve zero. No aleatório, esgotadas as opções, permite nova rodada.</td>
+</tr>
+<tr class="even">
+<td data-label="Evento">Avanço manual</td>
+<td data-label="Decisão da implementação">No sequencial sem repetição da lista, informa que a faixa é a última. No aleatório, o pedido manual permite renovar o conjunto de escolhas ao esgotar uma rodada.</td>
+</tr>
+<tr class="odd">
+<td data-label="Evento">Anterior</td>
+<td data-label="Decisão da implementação">Com tempo acima de três segundos, reinicia a faixa. No começo, consulta o histórico aleatório se disponível ou recua na sequência. Na primeira, repetir playlist permite voltar à última.</td>
+</tr>
+<tr class="even">
+<td data-label="Evento">Reordenar ou excluir</td>
+<td data-label="Decisão da implementação">Reordenar ajusta <code>index</code> para preservar a identidade da faixa corrente. Remover a faixa corrente descarrega a fonte e seleciona o índice válido mais próximo; a retomada depende de ação do usuário.</td>
+</tr>
+<tr class="odd">
+<td data-label="Evento">Rejeição de reprodução ou erro de mídia</td>
+<td data-label="Decisão da implementação">O <code>catch</code> de <code>playAt()</code> informa falha. O evento <code>error</code> aplica outra regra: informa formato não suportado e tenta outra faixa elegível enquanto a contagem de erros for inferior ao tamanho da fila.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="progresso-e-comandos-externos">Progresso e comandos externos</h3>
+<p><code>timeupdate</code> sincroniza o tempo decorrido e a posição da barra. <code>durationchange</code> atualiza duração e habilitação. O controle de posição converte uma escala de 0 a 1000 em segundos. <code>playing</code> e <code>pause</code> atualizam o destaque e os botões. Em navegadores compatíveis, a Media Session registra <code>play</code>, <code>pause</code>, <code>nexttrack</code>, <code>previoustrack</code>, <code>seekto</code>, <code>seekbackward</code> e <code>seekforward</code>. Ações não oferecidas pelo sistema podem ficar indisponíveis. O salto relativo padrão é de dez segundos quando o sistema não informa o intervalo.</p>
+<a href="#indice" class="top">Voltar ao sumário ↑</a></section>
+<section id="desenvolvimento"><h2>Desenvolver e testar uma alteração</h2>
+<ol type="1">
+<li><strong>Definir.</strong> Parta da revisão estável identificada em <code>VERSION</code> e no registro de release. Descreva a jornada afetada, o resultado esperado e os cenários de borda. Exemplo: se a mudança altera o fim da última faixa, explicite o comportamento com cada modo de repetição e com avanço manual.</li>
+<li><strong>Desenhar.</strong> Identifique o ponto de manutenção na tabela de componentes. Registre quais eventos e estados mudam, inclusive o comportamento quando a fila está vazia ou tem só uma faixa.</li>
+<li><strong>Desenvolver.</strong> Em uma branch de trabalho, edite o <code>index.html</code> e abra a cópia local em um navegador. Para testar via HTTP, com Python 3 instalado, execute na raiz do projeto <code>python -m http.server 8000 --bind 127.0.0.1</code> (no Windows com launcher, <code>py -m http.server 8000 --bind 127.0.0.1</code>). Abra <code>http://127.0.0.1:8000/</code> no mesmo computador. Encerre esse servidor de desenvolvimento com <strong>Ctrl+C</strong>.</li>
+<li><strong>Testar.</strong> Execute a matriz abaixo e registre navegador, dispositivo, revisão, arquivos usados, resultado esperado e observado. Use um aparelho e uma saída física para validar áudio Bluetooth. O navegador de desktop permite testar lógica e layout.</li>
+<li><strong>Publicar a versão aprovada.</strong> Atualize identificação, registro da versão, evidências e guias afetados. Para distribuição hospedada, publique também os HTML da documentação e verifique os três endereços. Use a versão anterior dos arquivos e da configuração como referência para retorno.</li>
+</ol>
+<h3 id="matriz-de-regressão-reproduzível">Matriz de regressão reproduzível</h3>
+<p>Prepare três arquivos de áudio curtos e distinguíveis, por exemplo <code>01 A.wav</code>, <code>02 B.wav</code> e <code>10 C.wav</code>. Use uma cópia de teste da página. Os cenários abaixo são um roteiro para manutenção. Os resultados históricos têm escopo próprio no <a href="https://github.com/DanielZani/Palco-Player/blob/f0d3fcaba599217377b2bcdde7cbf059678250db/docs/testes-v1.2.md">relatório de testes da v1.2</a>.</p>
+<table>
+<thead>
+<tr class="header">
+<th scope="col">Cenário</th>
+<th scope="col">Ação</th>
+<th scope="col">Resultado esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-label="Cenário">Importar</td>
+<td data-label="Ação">Adicionar os três arquivos de uma vez em ordem inversa e importar novamente o primeiro.</td>
+<td data-label="Resultado esperado">Ordem numérica A, B, C, total três e nenhum acréscimo duplicado.</td>
+</tr>
+<tr class="even">
+<td data-label="Cenário">Editar</td>
+<td data-label="Ação">Tocar B, mover B para cima, apagar outra faixa e depois apagar B.</td>
+<td data-label="Resultado esperado">Mover conserva o som de B; remover B interrompe a reprodução e preserva os arquivos.</td>
+</tr>
+<tr class="odd">
+<td data-label="Cenário">Posição e pausa</td>
+<td data-label="Ação">Pausar e retomar, mover a barra e acionar Anterior após quatro segundos.</td>
+<td data-label="Resultado esperado">Retoma do ponto atual, busca a nova posição e volta ao início no último comando.</td>
+</tr>
+<tr class="even">
+<td data-label="Cenário">Repetir faixa</td>
+<td data-label="Ação">Ativar Música, aguardar dois ciclos e avançar manualmente.</td>
+<td data-label="Resultado esperado">A faixa repete; a nova faixa selecionada passa a repetir.</td>
+</tr>
+<tr class="odd">
+<td data-label="Cenário">Repetir a lista</td>
+<td data-label="Ação">Ativar Playlist enquanto Música está ligada. Tocar a última e aguardar o fim.</td>
+<td data-label="Resultado esperado">Música desliga e a primeira faixa começa. Desligar Playlist e repetir o teste faz a reprodução encerrar.</td>
+</tr>
+<tr class="even">
+<td data-label="Cenário">Aleatório</td>
+<td data-label="Ação">Com a primeira faixa selecionada, ligar Aleatório e acompanhar sem intervenções até o fim da rodada; repetir com Playlist ligada.</td>
+<td data-label="Resultado esperado">Sem repetição, a rodada encerra. Com repetição da lista, começa nova rodada.</td>
+</tr>
+<tr class="odd">
+<td data-label="Cenário">Limpeza e sessão</td>
+<td data-label="Ação">Cancelar Limpar lista, depois confirmar. Importar outra vez e recarregar.</td>
+<td data-label="Resultado esperado">Cancelar conserva a fila; confirmar e recarregar resultam em lista vazia.</td>
+</tr>
+<tr class="even">
+<td data-label="Cenário">Falha e saída física</td>
+<td data-label="Ação">Testar arquivo indisponível ou inválido; em seguida, tocar áudio válido pelo alto-falante e pela caixa pareada.</td>
+<td data-label="Resultado esperado">Falha apresenta mensagem; mídia válida toca na saída escolhida pelo sistema. Registrar o resultado no dispositivo.</td>
+</tr>
+<tr class="odd">
+<td data-label="Cenário">Tela e documentação</td>
+<td data-label="Ação">Abrir em largura estreita e no desktop; percorrer sumário, abrir o outro guia e voltar ao player.</td>
+<td data-label="Resultado esperado">Leitura, foco e navegação possíveis; os três endereços retornam os documentos corretos.</td>
+</tr>
+</tbody>
+</table>
+<a href="#indice" class="top">Voltar ao sumário ↑</a></section>
+<section id="distribuicao"><h2>Distribuição e integração dos guias</h2>
+<p>Na distribuição local, o usuário abre <code>index.html</code>. Na hospedada, o navegador o recebe por HTTP(S). As duas páginas de documentação usam CSS embutido, fontes do sistema e links relativos. Podem ser lidas diretamente do disco. Links de referência ao GitHub ou a fornecedores exigem conexão.</p>
+<p><strong>VPS Hostinger.</strong> A proposta versionada publica um NGINX não privilegiado na porta 8080 do contêiner, com mapeamento padrão para <code>127.0.0.1:18712</code> no host. O proxy externo termina HTTPS. O Dockerfile da proposta inclui só <code>index.html</code>; a regra genérica de NGINX retorna 404. Para servir os guias, inclua os dois arquivos na imagem e permita explicitamente os dois caminhos. O <a href="manual.html#servidor">manual de hospedagem</a> traz as instruções e os testes. Referências da proposta: <a href="https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/deploy/Dockerfile">Dockerfile</a>, <a href="https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/deploy/default.conf">NGINX</a> e <a href="https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/docker-compose.yml">Compose</a>.</p>
+<p><strong>Links para a próxima versão.</strong> A partir do <code>index.html</code> na raiz, estes são os destinos previstos. Se os links forem acionados durante um evento, abrir o guia em outra aba permite consultar as instruções mantendo a sessão e a playlist abertas.</p>
+<pre class="html"><code>&lt;a href="docs/manual.html" target="_blank" rel="noopener"&gt;Manual do usuário (nova aba)&lt;/a&gt;
+&lt;a href="docs/arquitetura.html" target="_blank" rel="noopener"&gt;Documentação técnica (nova aba)&lt;/a&gt;</code></pre>
+<p>Ao testar uma distribuição em subdiretório, por exemplo <code>/palco/</code>, mantenha os destinos relativos. Confira a raiz, cada página interna e um link de seção do manual. O teste de <code>/healthz</code> verifica o contêiner, mas cada HTML precisa de uma verificação própria de conteúdo.</p>
+<a href="#indice" class="top">Voltar ao sumário ↑</a></section></article></main>
+<footer><div class="wrap">Palco Player · v1.2.0 &nbsp; / &nbsp; <a href="manual.html">Manual do usuário</a></div></footer></body></html>
