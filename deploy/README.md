@@ -1,4 +1,4 @@
-# Publicar a v1.2.0 em player.zani.ia.br
+# Publicar a v1.2.0 em palcoplayer.zani.ia.br
 
 O Nexo coordena o trabalho no Desktop autorizado. Work executa a preparação e o script, Sites permite conferir o pacote estático e Computer Use opera a sessão autenticada do provedor DNS. A VPS Hostinger entrega o HTML e os dois guias. Os arquivos de áudio ficam no aparelho do usuário. O PR e o acompanhamento do computador são eventos distintos.
 
@@ -29,7 +29,7 @@ O script verifica o checkout e constrói o site numa área temporária. O pacote
 Quando o script retornar `DNS_PENDING` (código 20), o mesmo Nexo executa os passos abaixo no Windows. O responsável é o executor com acesso à conta do titular.
 
 1. Na janela de trabalho dedicada, abrir o painel autenticado do Registro.br, selecionar exatamente **zani.ia.br** e conferir o serviço autoritativo e a edição de zona. Se a delegação apontar a outro operador, reconciliar o provedor antes de qualquer escrita. Preservar a delegação e o modo da zona.
-2. Procurar o **nome exato player** na zona. Consultar A, AAAA, CNAME e eventual wildcard aplicável. Guardar o estado inicial e o horário no registro privado da tarefa. Conferir se há mudanças de outras pessoas aguardando salvar.
+2. Procurar o **nome exato palcoplayer** na zona. Consultar A, AAAA, CNAME e eventual wildcard aplicável. Guardar o estado inicial e o horário no registro privado da tarefa. Conferir se há mudanças de outras pessoas aguardando salvar.
 3. Se houver um CNAME ou um IP divergente no nome exato, interromper a promoção e informar o conflito. Se existir um registro idêntico, reutilizá-lo. Se o nome estiver livre e o painel permitir editar apenas essa mudança, criar A para o IPv4 confirmado da VPS. Criar AAAA apenas com IPv6 explicitamente conferido e roteado para a mesma VPS. Preservar os demais registros, a raiz e os servidores DNS.
 4. Revisar a diferença no painel, salvar uma vez, reler a entrada nominal e registrar quais registros esta execução criou. Se o salvamento for incerto, consultar a zona antes de repetir. Registrar o resultado privadamente e retomar o mesmo SHA. O script confere a resolução pública antes de ativar a rota. Propagação pendente mantém o canário.
 5. No retorno, remover somente registros criados nesta operação que ainda sejam exatamente iguais ao recibo. Preservar valores anteriores ou alterados por terceiros. Confirmar no painel e em DNS público. Não há segredo DNS no repositório.

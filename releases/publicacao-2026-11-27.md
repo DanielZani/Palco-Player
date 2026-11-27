@@ -1,6 +1,6 @@
 # Publicação de 27/11/2026
 
-A candidata mantém a versão funcional 1.2.0. O destino previsto do player e dos dois guias é https://player.zani.ia.br. O repositório armazena os fontes. A VPS serve conteúdo estático. As músicas são escolhidas e reproduzidas no dispositivo de quem usa o player.
+A candidata mantém a versão funcional 1.2.0. O destino previsto do player e dos dois guias é https://palcoplayer.zani.ia.br. O repositório armazena os fontes. A VPS serve conteúdo estático. As músicas são escolhidas e reproduzidas no dispositivo de quem usa o player.
 
 | Etapa | Resultado exigido |
 |---|---|
@@ -16,4 +16,4 @@ O nome da máquina, a sessão SSH, a chave de host verificada, os endereços da 
 
 - Duas faixas WAV sintéticas em Chromium 158, nas larguras de 1280 e 390 px. A reprodução, pausa, avanço e repetição funcionaram. A fila foi preservada ao abrir os guias e reiniciou ao recarregar. O tráfego observado limitou-se a quatro GET de páginas por sessão.
 - Treze grupos de testes da transação da VPS em simulação passaram, incluindo repetição, conflito de hostname, pacote adulterado depois da preparação e retorno a uma revisão anterior.
-- A consulta ao DNS público de 27/11/2026 retornou NXDOMAIN para player.zani.ia.br. O teste da aplicação publicada, o aceite no Windows e o aceite no Android aguardam a operação no ambiente de destino.
+- A consulta ao DNS público de 27/11/2026 retornou NXDOMAIN para o endereço proposto originalmente (`player.zani.ia.br`). A consulta precedeu a escolha de `palcoplayer.zani.ia.br`. O teste da aplicação publicada, o aceite no Windows e o aceite no Android aguardam a operação no ambiente de destino.

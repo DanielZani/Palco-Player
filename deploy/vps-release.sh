@@ -16,7 +16,7 @@ import tempfile
 import time
 
 FILES = ("index.html", "docs/manual.html", "docs/arquitetura.html")
-HOST = "player.zani.ia.br"
+HOST = "palcoplayer.zani.ia.br"
 # https://github.com/nginx/docker-nginx-unprivileged (official non-root port 8080).
 # Immutable linux/amd64 manifest; Docker verifies its digest on pull.
 IMAGE = "nginx/nginx-unprivileged:1.30.6-alpine-slim@sha256:f597851ed3b6963fd5703225af4d31034bda960a5db20c5de51495ce0403e512"
@@ -282,7 +282,7 @@ def stage(root, rel, sha, upload, desired):
 
 
 def execute():
-    require(len(sys.argv) == 5, "Uso: stage|activate|rollback|status DIR SHA player.zani.ia.br")
+    require(len(sys.argv) == 5, "Uso: stage|activate|rollback|status DIR SHA palcoplayer.zani.ia.br")
     action, folder, sha, host = sys.argv[1:]
     require(action in ("stage", "activate", "rollback", "status") and SHA.fullmatch(sha)
             and host == HOST, "Acao, SHA ou hostname invalido.")

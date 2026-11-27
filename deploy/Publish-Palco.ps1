@@ -14,7 +14,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-$domain = 'player.zani.ia.br'
+$domain = 'palcoplayer.zani.ia.br'
 $pages = @('index.html', 'docs/manual.html', 'docs/arquitetura.html')
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $Release = $Release.ToLowerInvariant()

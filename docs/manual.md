@@ -8,7 +8,7 @@ Do primeiro arquivo à última faixa: prepare sua playlist, escolha a saída de 
 
 ## Começar em três passos
 
-1. Abra o **Palco Player** no navegador. O endereço da edição hospedada é [player.zani.ia.br](https://player.zani.ia.br/) após a publicação. Para usar uma cópia no aparelho, siga a orientação de [uso local](#local).
+1. Abra o **Palco Player** no navegador. O endereço da edição hospedada é [palcoplayer.zani.ia.br](https://palcoplayer.zani.ia.br/) após a publicação. Para usar uma cópia no aparelho, siga a orientação de [uso local](#local).
 2. Toque em **+ Adicionar músicas**, escolha dois ou três arquivos de áudio e confirme no seletor. Confira a quantidade na seção **Playlist do evento**. A primeira música fica selecionada.
 3. Toque em **▶ Reproduzir**. Confira se o tempo começa a avançar e se o som sai no dispositivo desejado. Para iniciar por outra música, toque no nome dela.
 
@@ -70,7 +70,7 @@ palco-player/
 
 Na publicação oficial, o Nexo coordena a execução pelo ChatGPT Desktop. O computador de operação prepara e publica o pacote da revisão prevista. O catálogo e os arquivos de áudio permanecem em cada aparelho que usa o player.
 
-1. **Conferir a publicação.** Quando a implantação estiver confirmada, abra [player.zani.ia.br](https://player.zani.ia.br/) por uma conexão externa à VPS. O navegador deve abrir o Palco Player com HTTPS válido.
+1. **Conferir a publicação.** Quando a implantação estiver confirmada, abra [palcoplayer.zani.ia.br](https://palcoplayer.zani.ia.br/) por uma conexão externa à VPS. O navegador deve abrir o Palco Player com HTTPS válido.
 2. **Conferir os guias.** Abra **Manual do usuário** e **Documentação técnica** pelo rodapé. Ao fechar a aba de cada guia, você volta ao player que estava usando.
 3. **Conferir a reprodução.** No computador e no celular, selecione dois áudios locais. Reproduza o primeiro, pause, retome e avance para o segundo. Confira a saída de som escolhida em cada aparelho.
 

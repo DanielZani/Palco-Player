@@ -19,7 +19,7 @@ Consulte o [registro de versão e aceite v1.2.0](./releases/v1.2.0.md) e o arqui
 
 ### Como usar
 
-1. Abra `index.html` no computador ou no celular. Na distribuição hospedada, o endereço de acesso é `https://player.zani.ia.br/` após a publicação.
+1. Abra `index.html` no computador ou no celular. Na distribuição hospedada, o endereço de acesso é `https://palcoplayer.zani.ia.br/` após a publicação.
 2. Toque em **Adicionar músicas** (ou **Adicionar pasta**, se o navegador permitir).
 3. Escolha os arquivos, conecte a caixa Bluetooth e toque em **Play**.
 4. Selecione **↻ Música** para repetir apenas a faixa atual ou **↻ Playlist** para repetir a lista toda. Toque novamente no botão ativo para desligar.
