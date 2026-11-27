@@ -83,7 +83,7 @@ def render(name, style):
 
 
 def validate(site):
-    for page in (site / "docs").glob("*.html"):
+    for page in [site / "index.html", *((site / "docs").glob("*.html"))]:
         doc = html.parse(page)
         anchors = doc.xpath("//@id | //a/@name")
         if len(set(anchors)) != len(anchors):
@@ -108,7 +108,7 @@ def main():
         (stage / "docs").mkdir()
         shutil.copyfile(ROOT / "index.html", stage / "index.html")
         for name in GUIDES:
-            (stage / "docs" / (name + ".html")).write_text(render(name, style), encoding="utf-8")
+            (stage / "docs" / (name + ".html")).write_text(render(name, style), encoding="utf-8", newline="\n")
         validate(stage)
         shutil.copytree(stage, ROOT / "dist", dirs_exist_ok=True)
     print("Site gerado e validado em dist/.")

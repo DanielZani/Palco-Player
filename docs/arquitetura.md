@@ -10,7 +10,7 @@ Como a versão estável carrega arquivos, decide a próxima faixa e entrega o á
 
 O Palco Player v1.2.0 é uma aplicação web estática de reprodução local, voltada ao uso em eventos. O navegador executa o HTML, o CSS e o JavaScript de um único arquivo, `index.html`. A seleção e a reprodução das músicas acontecem no aparelho de quem abriu a página. Hospedar esse arquivo muda o meio de distribuição do aplicativo; cada aparelho continua responsável por seus arquivos e por sua fila.
 
-**Referência da implementação:** branch `main`, revisão `f0d3fca`, versão `1.2.0`. O aceite registrado em 20/10/2026 trata da melhoria de repetição em celular. O [código da versão](https://github.com/DanielZani/Palco-Player/blob/f0d3fcaba599217377b2bcdde7cbf059678250db/index.html) e o [registro de aceite](https://github.com/DanielZani/Palco-Player/blob/f0d3fcaba599217377b2bcdde7cbf059678250db/releases/v1.2.0.md) fixam a base desta referência.
+**Referência histórica da lógica de reprodução:** branch `main`, revisão `f0d3fca`, versão `1.2.0`. O aceite registrado em 20/10/2026 trata da melhoria de repetição em celular. O [código da versão](https://github.com/DanielZani/Palco-Player/blob/f0d3fcaba599217377b2bcdde7cbf059678250db/index.html) e o [registro de aceite](https://github.com/DanielZani/Palco-Player/blob/f0d3fcaba599217377b2bcdde7cbf059678250db/releases/v1.2.0.md) fixam a base desta referência.
 
 <a name="mapa"></a>
 
@@ -37,7 +37,7 @@ A aplicação usa as APIs do navegador diretamente. A interface, a lógica e a r
 | `docs/testes-v1.2.md` | Relatório de cenários e resultados em Chromium. O relatório documenta os ensaios; o arquivo não é um executor de testes. |
 | `versoes/Palco_Player_v1.1.html` | Cópia histórica anterior à introdução dos modos separados de repetição. |
 | Branch `develop/mvp2-onedrive` | Linha reservada ao MVP 2 de acesso direto ao OneDrive pessoal, descrito no projeto como não homologado. Na estável, o arquivo pode chegar via seletor do sistema. |
-| Branch `deploy/v1.2.0-hostinger` | Preparação de hospedagem com Docker, NGINX, configuração de porta, healthcheck e proposta de publicação. Abrange uma camada separada da aplicação. |
+| `deploy/` e `docker-compose.yml` | Procedimento de publicação e configuração do serviço dedicado na VPS. A revisão implantada é identificada no registro de implantação. |
 | `docs/arquitetura.md` e `docs/manual.md` | Fontes editáveis da referência técnica e do manual de operação, legíveis no GitHub. |
 | `scripts/gerar_site.py`, `scripts/guias.css` e `scripts/requirements-guias.txt` | Gerador, estilo de leitura e versões das dependências usadas no empacotamento. |
 | `.github/workflows/gerar-site.yml` | Monta e valida a distribuição com o código e os dois documentos do checkout. |
@@ -134,14 +134,9 @@ Prepare três arquivos de áudio curtos e distinguíveis, por exemplo `01 A.wav`
 
 Na distribuição local, o usuário abre `index.html`. Na hospedada, o navegador o recebe por HTTP(S). As duas páginas de documentação usam CSS embutido, fontes do sistema e links relativos. Podem ser lidas diretamente do disco. Links de referência ao GitHub ou a fornecedores exigem conexão.
 
-**VPS Hostinger.** A proposta versionada publica um NGINX não privilegiado na porta 8080 do contêiner, com mapeamento padrão para `127.0.0.1:18712` no host. O proxy externo termina HTTPS. O Dockerfile da proposta inclui só `index.html`; a regra genérica de NGINX retorna 404. Para servir os guias, integre o pacote gerado da mesma revisão à construção da imagem e permita explicitamente os dois caminhos. O [manual de hospedagem](manual.md#servidor) traz as instruções e os testes. Referências da proposta: [Dockerfile](https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/deploy/Dockerfile), [NGINX](https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/deploy/default.conf) e [Compose](https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/docker-compose.yml).
+**VPS Hostinger.** O destino da distribuição é `https://player.zani.ia.br/`. O pacote gerado inclui a página inicial e as páginas `docs/manual.html` e `docs/arquitetura.html`. O fluxo de instalação, o servidor de origem, o encaminhamento pelo proxy HTTPS e o procedimento de retorno estão detalhados em `deploy/README.md` da mesma revisão. O script Windows `deploy/Publish-Palco.ps1` gera e envia o pacote. Na VPS, `deploy/vps-release.sh` verifica o manifesto, testa a cópia candidata e altera a rota exclusiva do Traefik. O Nexo retoma a mesma revisão depois que o executor confere o registro nominal no painel DNS. A promoção depende de conferir novamente o conteúdo público por HTTPS. Para o usuário do site, o [manual de hospedagem](manual.md#servidor) descreve como conferir o acesso e a reprodução.
 
-**Links para a próxima versão.** A partir do `index.html` na raiz, estes são os destinos previstos. Se os links forem acionados durante um evento, abrir o guia em outra aba permite consultar as instruções mantendo a sessão e a playlist abertas.
-
-```html
-<a href="docs/manual.html" target="_blank" rel="noopener">Manual do usuário (nova aba)</a>
-<a href="docs/arquitetura.html" target="_blank" rel="noopener">Documentação técnica (nova aba)</a>
-```
+**Links no player.** No rodapé do `index.html`, dois links relativos abrem os guias com `target="_blank"` e `rel="noopener"`. O usuário pode retornar à aba original sem perder a fila em memória. O pacote completo atende tanto a abertura local quanto a distribuição no domínio.
 
 Ao testar uma distribuição em subdiretório, por exemplo `/palco/`, mantenha os destinos relativos. Confira a raiz, cada página interna e um link de seção do manual. O teste de `/healthz` verifica o contêiner, mas cada HTML precisa de uma verificação própria de conteúdo.
 
@@ -169,14 +164,16 @@ python scripts/gerar_site.py
 
 Abra `dist/docs/manual.html` e `dist/docs/arquitetura.html` no navegador. Para simular um servidor, execute `python -m http.server 8000 --bind 127.0.0.1 --directory dist`. Abra a raiz e os dois caminhos de documentação em `http://127.0.0.1:8000/`. Dependências Python são necessárias apenas durante a construção.
 
-**Publicação e retorno.** O artefato é a unidade de distribuição. Publique o conteúdo completo de uma única revisão e, se precisar reverter, restaure o pacote completo da revisão anterior. A geração no GitHub não aciona o deploy da VPS. A proposta Hostinger no PR #1 ainda requer integração com esse pacote e com as duas rotas do servidor; veja as etapas no [manual de hospedagem](manual.md#servidor).
+**Publicação e retorno.** O artefato é a unidade de distribuição. Publique o conteúdo completo de uma única revisão e, se precisar reverter, restaure o pacote completo da revisão anterior. O Nexo coordena a execução pelo ChatGPT Desktop. A transição da candidata para versão publicada depende de conferir HTTPS e o conteúdo efetivamente servido na raiz e nos dois guias, abrir os links de ida e volta e reproduzir arquivos locais no computador e no celular. Registre no repositório o resultado por dispositivo, a revisão servida e a data. Após uma reversão, confira novamente a revisão e as três rotas.
 
 ### Histórico e validação desta estrutura
 
 - A documentação partiu da leitura da v1.2.0 e do relatório de testes do player. Foram produzidos o guia técnico e o manual, com instruções de uso local, operação do evento e hospedagem.
 - Na primeira entrega do PR #2 havia dois HTML editáveis. Depois foram incluídas cópias em Markdown porque a prévia dos arquivos HTML falhou no aplicativo ChatGPT. Daniel confirmou no celular a leitura das duas páginas apresentadas pelo GitHub.
-- A estrutura atual mantém os dois Markdown como fontes e gera os dois HTML para distribuição. Os caminhos previstos para os links da próxima versão do player permanecem os mesmos.
+- O PR #2 fixou as duas fontes Markdown, a geração dos dois HTML e os caminhos relativos para os links no player.
 - Para verificar a sincronização em uma revisão de teste, altere uma frase em cada Markdown e gere o pacote. Procure a frase respectiva em cada HTML, abra os dois guias a partir do pacote e confira os links cruzados. Introduza temporariamente uma âncora inexistente em um link e confirme que o gerador falha. Descarte as alterações de teste.
 - A homologação da distribuição inclui abrir os HTML efetivamente servidos pelo domínio no celular, consultar as seções e verificar o retorno ao player. A leitura confirmada no GitHub é um registro separado desse teste de publicação.
 
-**Verificação da geração em 27/11/2026.** Com as dependências fixadas no projeto, duas construções dos mesmos fontes produziram os mesmos três arquivos byte a byte. Em cópia isolada, a inclusão de texto, negrito e uma seção nova em cada Markdown chegou ao HTML correspondente e ao sumário. O player permaneceu idêntico ao original. Os três arquivos responderam HTTP 200 sob um subdiretório. Um link cruzado com âncora inexistente foi rejeitado e o último pacote válido foi preservado. Esses ensaios cobrem geração, navegação e empacotamento. A hospedagem de produção e a interface do player com os dois links pertencem à próxima entrega.
+**Verificação da geração em 27/11/2026.** Com as dependências fixadas no projeto, duas construções dos mesmos fontes produziram os mesmos três arquivos byte a byte. Em cópia isolada, a inclusão de texto, negrito e uma seção nova em cada Markdown chegou ao HTML correspondente e ao sumário. O player permaneceu idêntico ao original. Os três arquivos responderam HTTP 200 sob um subdiretório. Um link cruzado com âncora inexistente foi rejeitado e o último pacote válido foi preservado. Esses ensaios cobrem geração, navegação e empacotamento. Naquela revisão, o player ainda não incluía os links para os guias.
+
+**Candidata à publicação de 27/11/2026.** A integração acrescenta os dois links ao rodapé e mantém a lógica de importação e reprodução da v1.2.0. O ensaio histórico acima caracteriza a geração dos guias. A confirmação da revisão implantada exige a verificação do endereço público e o registro dos testes em produção.

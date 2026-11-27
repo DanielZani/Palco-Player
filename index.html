@@ -12,7 +12,7 @@
     button,input { font:inherit; }
     button { cursor:pointer; touch-action:manipulation; }
     button:disabled { opacity:.42; cursor:default; }
-    button:focus-visible, input:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+    a:focus-visible, button:focus-visible, input:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
     .page { width:min(760px,100%); margin:0 auto; padding:26px 17px max(44px,env(safe-area-inset-bottom)); }
     .eyebrow { font-size:.72rem; font-weight:800; letter-spacing:.17em; text-transform:uppercase; color:var(--accent); }
     h1 { font-size:clamp(1.95rem,7vw,2.8rem); line-height:1.1; margin:5px 0 8px; letter-spacing:-.045em; }
@@ -57,6 +57,8 @@
     .status { min-height:20px; color:var(--accent); font-size:.86rem; margin-top:12px; overflow-wrap:anywhere; }
     .status.error { color:var(--danger); }
     .footer { font-size:.79rem; line-height:1.5; text-align:center; color:var(--muted); padding-top:8px; }
+    .guide-links { display:flex; justify-content:center; flex-wrap:wrap; gap:4px 20px; }
+    .guide-links a { display:inline-flex; align-items:center; min-height:44px; color:var(--accent); }
     .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
     @media(max-width:380px) { .page{padding-inline:11px} .card{padding:15px} .mini{width:29px;flex-basis:29px} .controls{gap:9px} }
   </style>
@@ -65,11 +67,11 @@
 <main class="page">
   <div class="eyebrow">Reprodutor para eventos • Offline • v1.2</div>
   <h1>Palco Player</h1>
-  <p class="sub">Sua playlist, seu celular, sua caixa Bluetooth. Sem anúncios e sem instalar serviços adicionais.</p>
+  <p class="sub">Sua playlist no computador ou celular. Sem anúncios e sem instalar serviços adicionais.</p>
 
   <section class="card" aria-label="Adicionar músicas">
     <div class="label">1 · Escolha as músicas</div>
-    <p style="margin:9px 0 14px;line-height:1.5">Importe arquivos MP3, M4A, WAV, AAC, OGG ou FLAC disponíveis no celular.</p>
+    <p style="margin:9px 0 14px;line-height:1.5">Importe arquivos MP3, M4A, WAV, AAC, OGG ou FLAC disponíveis no seu aparelho.</p>
     <div class="import-row">
       <button class="primary" id="pickBtn" type="button">+ Adicionar músicas</button>
       <button class="secondary" id="folderBtn" type="button" title="Disponibilidade varia conforme o navegador">Adicionar pasta</button>
@@ -111,7 +113,13 @@
     <ol class="track-list" id="list" aria-label="Músicas adicionadas"></ol>
   </section>
 
-  <div class="footer">A saída de áudio é controlada pelo Android: conecte a caixa Bluetooth e selecione-a em “Saída de mídia”. Mantenha esta página aberta durante o evento. Esta versão não armazena os arquivos após fechar ou recarregar a página.</div>
+  <footer class="footer">
+    <p>Escolha a saída de som no computador ou no celular. Para manter a playlist durante o evento, deixe esta página aberta.</p>
+    <nav class="guide-links" aria-label="Guias do Palco Player">
+      <a href="docs/manual.html" target="_blank" rel="noopener">Manual do usuário (nova aba)</a>
+      <a href="docs/arquitetura.html" target="_blank" rel="noopener">Documentação técnica (nova aba)</a>
+    </nav>
+  </footer>
 </main>
 <script>
 (() => {

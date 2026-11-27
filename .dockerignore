@@ -1,0 +1,9 @@
+**
+!deploy/
+!deploy/Dockerfile
+!deploy/default.conf
+!dist/
+!dist/index.html
+!dist/docs/
+!dist/docs/manual.html
+!dist/docs/arquitetura.html

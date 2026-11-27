@@ -8,9 +8,11 @@ Do primeiro arquivo à última faixa: prepare sua playlist, escolha a saída de 
 
 ## Começar em três passos
 
-1. Abra o **Palco Player** no navegador. Se ele já está hospedado, basta abrir o endereço do site. Para usar uma cópia no aparelho, siga a orientação de [uso local](#local).
+1. Abra o **Palco Player** no navegador. O endereço da edição hospedada é [player.zani.ia.br](https://player.zani.ia.br/) após a publicação. Para usar uma cópia no aparelho, siga a orientação de [uso local](#local).
 2. Toque em **+ Adicionar músicas**, escolha dois ou três arquivos de áudio e confirme no seletor. Confira a quantidade na seção **Playlist do evento**. A primeira música fica selecionada.
 3. Toque em **▶ Reproduzir**. Confira se o tempo começa a avançar e se o som sai no dispositivo desejado. Para iniciar por outra música, toque no nome dela.
+
+Para consultar um guia durante a reprodução, use os links **Manual do usuário** e **Documentação técnica** no rodapé. Cada guia abre em outra aba. Volte à aba original para continuar com a mesma playlist.
 
 > **Antes de preparar um evento:** a playlist vale para a página aberta. Fechar ou recarregar a página perde a seleção e a ordem. Para reconstruir a sequência facilmente, guarde os áudios em uma pasta e numere os nomes dos arquivos, como `01 Abertura.mp3` e `02 Entrada.mp3`.
 
@@ -66,40 +68,13 @@ palco-player/
 
 ### Opção B · VPS Hostinger com Docker e proxy HTTPS
 
-O repositório contém uma **proposta de implantação** no [PR de preparação da Hostinger](https://github.com/DanielZani/Palco-Player/pull/1). O exemplo usa NGINX no contêiner e um proxy HTTPS na VPS. O domínio previsto é `player.zani.ia.br`; confirme sua configuração no ambiente antes de utilizá-lo.
+Na publicação oficial, o Nexo coordena a execução pelo ChatGPT Desktop. O computador de operação prepara e publica o pacote da revisão prevista. O catálogo e os arquivos de áudio permanecem em cada aparelho que usa o player.
 
-1. O administrador identifica o proxy e a rede existentes, o domínio, o mecanismo de certificado, as versões de Docker/Compose e uma porta de loopback livre. O pacote sugere `127.0.0.1:18712`. Registre a configuração do site e a versão anterior para retorno.
-2. Prepare uma cópia de trabalho com `docker-compose.yml`, `deploy/Dockerfile` e `deploy/default.conf` da [revisão de hospedagem](https://github.com/DanielZani/Palco-Player/tree/72fff687976c3e16e447a2e34b4fafef11edf6b2), a revisão aprovada do produto e seu pacote gerado em `dist/` na raiz do contexto Docker. Para cada atualização, use a saída da geração da mesma revisão.
-3. **Inclua os guias no pacote.** O Dockerfile original copia somente o player. Na integração inicial, substitua a cópia isolada de `index.html` pelas três linhas abaixo. Elas usam o pacote gerado. No bloco `server` de `deploy/default.conf`, acrescente as duas rotas exatas antes da regra genérica que retorna 404. O exemplo utiliza o `root` já definido no pacote.
+1. **Conferir a publicação.** Quando a implantação estiver confirmada, abra [player.zani.ia.br](https://player.zani.ia.br/) por uma conexão externa à VPS. O navegador deve abrir o Palco Player com HTTPS válido.
+2. **Conferir os guias.** Abra **Manual do usuário** e **Documentação técnica** pelo rodapé. Ao fechar a aba de cada guia, você volta ao player que estava usando.
+3. **Conferir a reprodução.** No computador e no celular, selecione dois áudios locais. Reproduza o primeiro, pause, retome e avance para o segundo. Confira a saída de som escolhida em cada aparelho.
 
-```dockerfile
-COPY dist/index.html /usr/share/nginx/html/index.html
-COPY dist/docs/manual.html /usr/share/nginx/html/docs/manual.html
-COPY dist/docs/arquitetura.html /usr/share/nginx/html/docs/arquitetura.html
-```
-
-```nginx
-location = /docs/manual.html     { try_files $uri =404; }
-location = /docs/arquitetura.html { try_files $uri =404; }
-```
-
-4. Se o provedor construir diretamente de um checkout limpo, a preparação da imagem precisa gerar `dist/` nessa construção ou receber o artefato da revisão; a pasta gerada não acompanha o checkout. Na pasta de trabalho da implantação, o administrador valida o Compose, constrói a imagem e verifica o serviço. Estes comandos exemplificam a configuração original e a porta padrão em um ambiente preparado:
-
-```sh
-docker compose config --quiet
-docker compose up -d --build web
-docker compose ps
-curl -fsS http://127.0.0.1:18712/healthz
-curl -fI http://127.0.0.1:18712/
-curl -fI http://127.0.0.1:18712/docs/manual.html
-curl -fI http://127.0.0.1:18712/docs/arquitetura.html
-```
-
-5. Espere o serviço ficar saudável. O primeiro endereço de teste deve responder `ok`; os três HTML devem retornar HTTP 200. Se a porta foi alterada por `PALCO_LOCAL_PORT`, use a porta escolhida nos testes e no proxy.
-6. Configure o host virtual no proxy existente para encaminhar a raiz **e os caminhos de documentação** ao serviço. Para proxy no próprio host, o destino proposto é `http://127.0.0.1:18712`. Para proxy em outro contêiner, use a rede e o destino acessível a partir dele. Habilite o certificado do subdomínio e confirme o DNS.
-7. Em outra conexão, abra os três endereços HTTPS em um navegador. O primeiro deve exibir o player e os demais os respectivos guias. No Android, teste duas faixas e a saída de áudio. Se falhar, retire apenas a nova rota ou restaure o host virtual e a versão anterior do serviço do player.
-
-Consulte o [roteiro de implantação do projeto](https://github.com/DanielZani/Palco-Player/blob/72fff687976c3e16e447a2e34b4fafef11edf6b2/deploy/README.md), o [guia de arquivos estáticos e proxy do NGINX](https://nginx.org/en/docs/beginners_guide.html) e a [referência do Docker Compose](https://docs.docker.com/reference/cli/docker/compose/up/).
+Para reproduzir a instalação, conferir DNS e HTTPS ou recuperar uma versão anterior, consulte o arquivo `deploy/README.md` da mesma revisão no repositório e a [documentação técnica](arquitetura.md#distribuicao). O aceite da publicação fica registrado com a revisão instalada, a data e o resultado no domínio.
 
 <a name="playlist"></a>
 
@@ -166,4 +141,4 @@ Os botões mostram o estado **sim** ou **não**. Toque de novo no botão ativo p
 | O tempo avança, mas a caixa está muda. | Confira o volume de mídia, a saída selecionada e o pareamento Bluetooth. Faça um teste pelo alto-falante do dispositivo para localizar a causa. |
 | A mesma música sempre reinicia, ou a lista volta ao começo. | Verifique **↻ Música** e **↻ Playlist**. Deixe os dois em **não** para encerrar ao final. |
 | A lista sumiu quando voltei. | Se a página foi recarregada, fechada ou descartada pelo navegador, importe a pasta outra vez. Pastas com arquivos numerados facilitam recompor a ordem. |
-| O site abre, mas um guia retorna 404. | Confira o caminho `docs/`, maiúsculas e minúsculas, a cópia dos dois HTML e as rotas no servidor. Em Docker, reconstrua a imagem após incluir os arquivos e a configuração. |
+| O site abre, mas um guia retorna 404. | Confira o caminho `docs/`, maiúsculas e minúsculas, a cópia dos dois HTML e as rotas no servidor. Na VPS oficial, peça a conferência dos arquivos e dos hashes da revisão ativa. |
