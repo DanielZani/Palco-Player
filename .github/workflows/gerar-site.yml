@@ -1,0 +1,50 @@
+name: Gerar player e documentação
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
+jobs:
+  pacote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r scripts/requirements-guias.txt
+      - run: python scripts/gerar_site.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: palco-player-site
+          path: dist/
+          if-no-files-found: error
+      - name: Conferir origem HTTP com o pacote desta revisão
+        shell: bash
+        run: |
+          set -eu
+          docker build -f deploy/Dockerfile -t palco-smoke .
+          container=$(docker run -d --read-only --tmpfs /tmp -p 127.0.0.1::8080 palco-smoke)
+          trap 'docker rm -f "$container" >/dev/null' EXIT
+          endpoint="http://$(docker port "$container" 8080/tcp)"
+          curl -fsS --retry 10 --retry-connrefused "$endpoint/healthz" | grep -x ok
+          for page in index.html docs/manual.html docs/arquitetura.html; do
+            curl -fsS "$endpoint/$page" -o "$RUNNER_TEMP/page"
+            cmp "dist/$page" "$RUNNER_TEMP/page"
+          done
+          curl -fsS "$endpoint/" -o "$RUNNER_TEMP/root"
+          cmp dist/index.html "$RUNNER_TEMP/root"
+          test "$(curl -s -o /dev/null -w '%{http_code}' "$endpoint/README.md")" = 404
+
+  sintaxe-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Analisar o script com Windows PowerShell
+        shell: powershell
+        run: |
+          $errors = $null
+          $tokens = $null
+          [void][Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'deploy/Publish-Palco.ps1'), [ref]$tokens, [ref]$errors)
+          if ($errors.Count) { throw ($errors -join [Environment]::NewLine) }
