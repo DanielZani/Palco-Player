@@ -40,3 +40,7 @@ O MVP 2 com acesso direto ao OneDrive pessoal é uma evolução **não homologad
 Este GitHub é a fonte oficial do código. A publicação futura em `https://player.zani.ia.br` (VPS Hostinger) deve ocorrer por um processo controlado e só pode ser considerada concluída após validação no ambiente real. Ter código no GitHub **não significa** que a VPS tenha sido atualizada.
 
 Este projeto pessoal não integra a DOP e não utiliza Zeus/OpenClaw.
+
+## Documentação e pacote do produto
+
+O [manual do usuário](docs/manual.md) e a [documentação técnica](docs/arquitetura.md) são as fontes das páginas web. Edite o Markdown ao revisar um guia. A geração automática reúne o player e as duas páginas no artefato **palco-player-site** do GitHub Actions. O [processo de geração e distribuição](docs/arquitetura.md#geracao) descreve a reprodução local e a integração com a hospedagem.
